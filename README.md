@@ -1,1 +1,2 @@
-# cs152_project_2023
+# Picross Project
+for cs152 2023 fall semester
