@@ -1,18 +1,21 @@
 #makes a window to draw in a picross grid
 import tkinter as tk
 import variables as var
-from PIL import ImageGrab
-offset = 20
-
+offset = var.offset
+# max_window_width=80%of_screenwidth
+# min_square_width=5% of screenwidth
 
 class PicWindow:
 
-  def __init__(self, rows, cols, array): #initial variables
+  def __init__(self, rows, cols, array, resolution): #initial variables
     self.rows = rows
     self.cols = cols
     self.array = array
     self.boxes = [ [ None for j in row ] for row in array ]
-    self.sqrw = min(1000//max(rows,cols), 100)
+    scrw, scrh = resolution[0], resolution[1]
+    default_sqrw = min(scrw, scrh)//20
+    max_sqrw = min((scrw//10*8)//cols,(scrh//10*8)//rows)
+    self.sqrw = min(max_sqrw, default_sqrw)
     self.winw = self.sqrw*cols+offset*2
     self.winh = self.sqrw*rows+offset*2
   

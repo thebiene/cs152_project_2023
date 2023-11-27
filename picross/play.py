@@ -15,7 +15,7 @@ def start(): #create TK window to get inputs for a picross window
 
   def play_new(): #opens a blank picross window, size determined by the scales
     array = [ [ 0 for width_ in range(col_scale.get()) ] for height_ in range(row_scale.get()) ]
-    picross = PicWindow(row_scale.get(), col_scale.get(), array)
+    picross = PicWindow(row_scale.get(), col_scale.get(), array, resolution)
     root.destroy()
     picross.play()
 
@@ -33,11 +33,12 @@ def start(): #create TK window to get inputs for a picross window
         print(i, new_line)
         rows.append(new_line)
     array = [ [ 0 if x == '0' else 1 for x in line.strip() ] for line in rows ]
-    picross = PicWindow(len(array), len(array[0]), array)
+    picross = PicWindow(len(array), len(array[0]), array, resolution)
     root.destroy()
     picross.play()
 
   root = tk.Tk()
+  resolution = [root.winfo_screenwidth(), root.winfo_screenheight()]
   root.winfo_toplevel().title("PICROSS")
   frame = tk.Frame()
   frame.pack(padx=50, pady=50)
