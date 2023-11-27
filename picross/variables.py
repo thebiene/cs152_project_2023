@@ -1,6 +1,3 @@
-max_grid_count = 100
-offset = 20 #padding
-
 #colors
 bg = "#ffffff" #background
 edge = "#000" #grid lines
@@ -10,7 +7,6 @@ empty = "#eeeeff" #unmarked boxes
 checked = "#bbbbbb" #crossed out boxes
 active = "#dddddd" #hover
 
-background = bg
-border = edge
-text = txt
-hover = active
+#other variables
+max_grid_count = 100 #maximum width or height of a new grid
+offset = 20 #padding used in windows

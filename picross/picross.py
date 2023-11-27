@@ -1,3 +1,4 @@
+#makes a window to draw in a picross grid
 import tkinter as tk
 import variables as var
 from PIL import ImageGrab
@@ -6,7 +7,7 @@ offset = 20
 
 class PicWindow:
 
-  def __init__(self, rows, cols, array):
+  def __init__(self, rows, cols, array): #initial variables
     self.rows = rows
     self.cols = cols
     self.array = array
@@ -15,12 +16,12 @@ class PicWindow:
     self.winw = self.sqrw*cols+offset*2
     self.winh = self.sqrw*rows+offset*2
   
-  def play(self):
+  def play(self): #creates window/starts the program
     self.win = tk.Tk()
     self.create_window()
     self.win.mainloop()
 
-  def create_window(self):
+  def create_window(self): #creates the TK window and its widgets
     self.win.winfo_toplevel().title("PICROSS")
     self.win.resizable(False,False)
     self.canv = tk.Canvas(self.win, height=self.winh, width=self.winw)
@@ -32,7 +33,7 @@ class PicWindow:
     savebutton.pack(side='right')
     self.create_grid()
 
-  def create_grid(self):
+  def create_grid(self): #creates the interactive picross grid
     for vi in range(self.rows):
       for hi in range(self.cols):
         color = var.empty if self.array[vi][hi] == 0 else var.fill
@@ -51,19 +52,19 @@ class PicWindow:
           outline = self.canv.create_rectangle(x1, y1, x2, y2, width=3)
           print(x1, y1, x2, y2)
 
-  def save(self):
+  def save(self): #saves current drawing as a txt file
     filename = self.filename.get().strip(' ')
     if filename != '':
       #save file as filename
       print('save as', filename)
-      f = open(f"{filename}.txt", "w")#create new file if doestn already exist
+      f = open(f"{filename}.txt", "w")#create new file, overwrite if filename exists
       for row in self.array:
         for item in row:
           f.write(str(item))
         f.write('\n')
       f.write('\n')
 
-  def button_1(self, z):
+  def button_1(self, z): #left mouse button, toggles square color to filled
     x, y = z[0], z[1]
     box = self.boxes[x][y]
     color = self.canv.itemcget(box, "fill")
@@ -75,7 +76,7 @@ class PicWindow:
       self.array[x][y] = 1
     print(x, y, self.array[x][y])
   
-  def button_3(self, z):
+  def button_3(self, z): #right mouse button, toggles square color to crossed out
     x, y = z[0], z[1]
     box = self.boxes[x][y]
     color = self.canv.itemcget(box, "fill")
@@ -88,5 +89,6 @@ class PicWindow:
     print(x, y, self.array[x][y])
 
 
-if __name__ == "__main__":
-  picross = picross_window(15, 15, [ [ 0 for i in range(15) ] for j in range(15) ])
+if __name__ == "__main__": #if this program is run on its own it will default to an empty 15x15 grid.
+  picross = PicWindow(15, 15, [ [ 0 for i in range(15) ] for j in range(15) ])
+  picross.play()

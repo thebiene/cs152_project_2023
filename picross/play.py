@@ -1,23 +1,25 @@
+#program to initialize a picross drawing window
 import tkinter as tk
 from tkinter import filedialog
 import variables as var
 from picross import PicWindow
 import os
 
-def start():
-  def choose_file():
+def start(): #create TK window to get inputs for a picross window
+
+  def choose_file(): #opens a file explorer to select a picross file
     filename = tk.filedialog.askopenfilename(initialdir=os.getcwd(),title = "Select a File",
                 filetypes = (("text files","*.txt"), ("all files","*.*")))
-    # Change label contents
     print(filename)
     play_from_save(filename)
 
-  def play_new():
+  def play_new(): #opens a blank picross window, size determined by the scales
     array = [ [ 0 for width_ in range(col_scale.get()) ] for height_ in range(row_scale.get()) ]
     picross = PicWindow(row_scale.get(), col_scale.get(), array)
     root.destroy()
     picross.play()
-  def play_from_save(filename):
+
+  def play_from_save(filename): #opens input file as a picross window
     f = open(filename, "r")
     rows = []
     finished = False
@@ -35,8 +37,6 @@ def start():
     root.destroy()
     picross.play()
 
-
-
   root = tk.Tk()
   root.winfo_toplevel().title("PICROSS")
   frame = tk.Frame()
@@ -52,6 +52,8 @@ def start():
   b2 = tk.Button(frame, text="choose grid from files", font=('TkDefaultFont', 26), padx=20, pady=10, command=choose_file)
   b2.pack()
   root.mainloop()
+
+
 
 if __name__ == "__main__":
   start()
