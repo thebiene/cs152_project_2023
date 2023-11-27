@@ -12,8 +12,8 @@ class PicWindow:
     self.array = array
     self.boxes = [ [ None for j in row ] for row in array ]
     self.sqrw = min(1000//max(rows,cols), 100)
-    self.winw = self.sqrw*rows+offset*2
-    self.winh = self.sqrw*cols+offset*2
+    self.winw = self.sqrw*cols+offset*2
+    self.winh = self.sqrw*rows+offset*2
   
   def play(self):
     self.win = tk.Tk()
@@ -33,9 +33,8 @@ class PicWindow:
     self.create_grid()
 
   def create_grid(self):
-    for hi in range(self.rows):
-      for vi in range(self.cols):
-        print(f'row:{vi},col:{hi}')
+    for vi in range(self.rows):
+      for hi in range(self.cols):
         color = var.empty if self.array[vi][hi] == 0 else var.fill
         x1, y1 = hi*self.sqrw+offset, vi*self.sqrw+offset
         x2, y2 = x1+self.sqrw, y1+self.sqrw
@@ -44,12 +43,13 @@ class PicWindow:
         self.canv.tag_bind(box, "<Button-1>", lambda _, z=(vi, hi): self.button_1(z))
         self.canv.tag_bind(box, "<Button-3>", lambda _, z=(vi, hi): self.button_3(z))
         # canvas.tag_bind(box, "<B1-Motion>", lambda event, z=box: drag_action(event, z))
-    for hi in range(self.rows):
-      for vi in range(self.cols):
+    for vi in range(self.rows):
+      for hi in range(self.cols):
         if vi%5==0 and hi%5==0:
           x1, y1 = hi*self.sqrw+offset, vi*self.sqrw+offset
-          x2, y2 = self.sqrw*min(hi+5, self.rows)+offset, self.sqrw*min(vi+5, self.cols)+offset
+          x2, y2 = self.sqrw*min(hi+5, self.cols)+offset, self.sqrw*min(vi+5, self.rows)+offset
           outline = self.canv.create_rectangle(x1, y1, x2, y2, width=3)
+          print(x1, y1, x2, y2)
 
   def save(self):
     filename = self.filename.get().strip(' ')

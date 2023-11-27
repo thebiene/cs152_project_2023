@@ -13,7 +13,7 @@ def start():
     play_from_save(filename)
 
   def play_new():
-    array = [ [ 0 for width_ in range(row_scale.get()) ] for height_ in range(col_scale.get()) ]
+    array = [ [ 0 for width_ in range(col_scale.get()) ] for height_ in range(row_scale.get()) ]
     picross = PicWindow(row_scale.get(), col_scale.get(), array)
     root.destroy()
     picross.play()
