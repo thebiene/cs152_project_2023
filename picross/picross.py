@@ -85,31 +85,46 @@ class PicWindow:
     return(row_str, col_str)
 
   def puzzle_window(self): # should create a new window with playable/printable puzzle (so far has boxes but no numbers)
+    row_str, col_str=PicWindow.number_sets(self)
+    max_row=len(max(row_str, key=len))
+    row_room=max_row*self.sqrw/14
+    max_col=len(max(col_str, key=len))
+    col_room=max_col*self.sqrw/10
+    font_size=round(self.sqrw/3)
+    
     self.window=tk.Toplevel(self.win)
     self.window.resizable(False,False)
     self.puzzle=tk.Canvas(self.window, height=self.winh+offset*4, width=self.winw+offset*4)
     for vi in range(self.rows):
       for hi in range(self.cols):
         color = var.empty if self.array[vi][hi] == 0 else var.fill
-        x1, y1 = hi*self.sqrw+offset+self.sqrw, vi*self.sqrw+offset+self.sqrw
+        x1, y1 = hi*self.sqrw+offset+self.sqrw+row_room, vi*self.sqrw+offset+self.sqrw+col_room
         x2, y2 = x1+self.sqrw, y1+self.sqrw
         box = self.puzzle.create_rectangle(x1, y1, x2, y2, fill=color)
         self.boxes[vi][hi] = box
     for vi in range(self.rows):
       for hi in range(self.cols):
         if vi%5==0 and hi%5==0:
-          x1, y1 = hi*self.sqrw+offset+self.sqrw/2, vi*self.sqrw+offset+self.sqrw/2
-          x2, y2 = self.sqrw*min(hi+5, self.cols)+offset+self.sqrw/2, self.sqrw*min(vi+5, self.rows)+offset+self.sqrw/2
-          outline = self.puzzle.create_rectangle(x1+offset, y1+offset, x2+offset, y2+offset, width=3)
+          x1, y1 = hi*self.sqrw+offset+row_room+self.sqrw, vi*self.sqrw+offset+col_room+self.sqrw
+          x2, y2 = self.sqrw*min(hi+5, self.cols)+offset+row_room+self.sqrw, self.sqrw*min(vi+5, self.rows)+offset+col_room+self.sqrw
+          outline = self.puzzle.create_rectangle(x1, y1, x2, y2, width=3)
+          outline_l = self.puzzle.create_rectangle(offset, y1, x1, y2, width=3)
+          outline_t = self.puzzle.create_rectangle(x1, offset, x2, y1, width=3)
           print(x1, y1, x2, y2)
     for vi in range(self.rows):
-      y1=vi*self.sqrw+offset+self.sqrw
+      y1=vi*self.sqrw+offset+self.sqrw+col_room
       y2=y1+self.sqrw
-      nboxv = self.puzzle.create_rectangle(offset, y1, offset+self.sqrw, y2)
-    for hi in range(self.rows):
-      x1=hi*self.sqrw+offset+self.sqrw
+      nboxv = self.puzzle.create_rectangle(offset, y1, offset+self.sqrw+row_room, y2)
+    for vi in range(self.cols):
+      x=vi*self.sqrw+offset+self.sqrw+row_room
+      self.puzzle.create_text(x+self.sqrw/2, offset*2+col_room/2, text=col_str[vi], font=("Monotype Corsiva",font_size))
+    for hi in range(self.cols):
+      x1=hi*self.sqrw+offset+self.sqrw+row_room
       x2=y1+self.sqrw
-      nboxh = self.puzzle.create_rectangle(x1, offset, x2, offset+self.sqrw)
+      nboxh = self.puzzle.create_rectangle(x1, offset, x2, offset+self.sqrw+col_room)
+    for hi in range(self.rows):
+      y=hi*self.sqrw+offset+self.sqrw
+      self.puzzle.create_text(offset*2+row_room/2, y+self.sqrw/2+col_room, text=row_str[hi], font=("Monotype Corsiva",font_size))
     self.puzzle.pack()
     
   def create_grid(self): #creates the interactive picross grid
