@@ -103,10 +103,9 @@ class PicWindow:
     self.puzzle=tk.Canvas(self.window, height=self.winh+offset*4, width=self.winw+offset*4)
     for vi in range(self.rows):
       for hi in range(self.cols):
-        color = var.empty if self.array[vi][hi] == 0 else var.fill
         x1, y1 = hi*self.sqrw+offset+self.sqrw+row_room, vi*self.sqrw+offset+self.sqrw+col_room
         x2, y2 = x1+self.sqrw, y1+self.sqrw
-        box = self.puzzle.create_rectangle(x1, y1, x2, y2, fill=color)
+        box = self.puzzle.create_rectangle(x1, y1, x2, y2)
         self.boxes[vi][hi] = box
     for vi in range(self.rows):
       for hi in range(self.cols):
