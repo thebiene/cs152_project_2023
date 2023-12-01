@@ -31,11 +31,41 @@ class PicWindow:
     self.filename = tk.StringVar()
     textentry = tk.Entry(self.win, textvariable = self.filename)
     savebutton = tk.Button(self.win, text="SAVE", font=('TkDefaultFont', 16), padx=20, pady=10, command=self.save)
+    displaybutton = tk.Button(self.win, text="DISPLAY", font=('TkDefaultFont', 16), padx=20, pady=10, command=self.puzzle_window)
     self.canv.pack()
     textentry.pack(pady=(0,offset),padx=offset,side="right")
     savebutton.pack(side='right')
+    displaybutton.pack(side='left',padx=offset)
     self.create_grid()
 
+  def puzzle_window(self): # should create a new window with playable/printable puzzle (so far has boxes but no numbers)
+    self.window=tk.Toplevel(self.win)
+    self.window.resizable(False,False)
+    self.puzzle=tk.Canvas(self.window, height=self.winh+offset*4, width=self.winw+offset*4)
+    for vi in range(self.rows):
+      for hi in range(self.cols):
+        color = var.empty if self.array[vi][hi] == 0 else var.fill
+        x1, y1 = hi*self.sqrw+offset+self.sqrw, vi*self.sqrw+offset+self.sqrw
+        x2, y2 = x1+self.sqrw, y1+self.sqrw
+        box = self.puzzle.create_rectangle(x1, y1, x2, y2, fill=color)
+        self.boxes[vi][hi] = box
+    for vi in range(self.rows):
+      for hi in range(self.cols):
+        if vi%5==0 and hi%5==0:
+          x1, y1 = hi*self.sqrw+offset+self.sqrw/2, vi*self.sqrw+offset+self.sqrw/2
+          x2, y2 = self.sqrw*min(hi+5, self.cols)+offset+self.sqrw/2, self.sqrw*min(vi+5, self.rows)+offset+self.sqrw/2
+          outline = self.puzzle.create_rectangle(x1+offset, y1+offset, x2+offset, y2+offset, width=3)
+          print(x1, y1, x2, y2)
+    for vi in range(self.rows):
+      y1=vi*self.sqrw+offset+self.sqrw
+      y2=y1+self.sqrw
+      nboxv = self.puzzle.create_rectangle(offset, y1, offset+self.sqrw, y2)
+    for hi in range(self.rows):
+      x1=hi*self.sqrw+offset+self.sqrw
+      x2=y1+self.sqrw
+      nboxh = self.puzzle.create_rectangle(x1, offset, x2, offset+self.sqrw)
+    self.puzzle.pack()
+    
   def create_grid(self): #creates the interactive picross grid
     for vi in range(self.rows):
       for hi in range(self.cols):
