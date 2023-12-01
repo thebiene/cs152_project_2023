@@ -38,6 +38,52 @@ class PicWindow:
     displaybutton.pack(side='left',padx=offset)
     self.create_grid()
 
+  def number_sets(self): #creates the sets of numbers that will be displayed for each row and col in the final puzzle (in string format)
+    row_sets=[]
+    col_sets=[]
+    for i in range(len(self.array)):
+      l=[]
+      current=0
+      for j in range(len(self.array[i])):
+          if self.array[i][j] == 1:
+            current+=1
+          else:
+            if current !=0:
+              l.append(current)
+              current=0
+      if current !=0:
+        l.append(current)
+      row_sets.append(l)
+    for j in range(len(self.array[0])):
+      l=[]
+      current=0
+      for i in range(len(self.array)):
+        if self.array[i][j] == 1:
+            current+=1
+        else:
+          if current !=0:
+            l.append(current)
+            current=0
+      if current !=0:
+        l.append(current)
+      col_sets.append(l)
+    row_str=[]
+    for item in range(len(row_sets)):
+      i=str(row_sets[item])
+      i=i.replace('[','')
+      i=i.replace(']','')
+      i=i.replace(',','')
+      row_str.append(i)
+    col_str=[]
+    for item in range(len(col_sets)):
+      i=str(col_sets[item])
+      i=i.replace('[','')
+      i=i.replace(']','')
+      i=i.replace(',','\n')
+      i=i.replace(' ','')
+      col_str.append(i)
+    return(row_str, col_str)
+
   def puzzle_window(self): # should create a new window with playable/printable puzzle (so far has boxes but no numbers)
     self.window=tk.Toplevel(self.win)
     self.window.resizable(False,False)
