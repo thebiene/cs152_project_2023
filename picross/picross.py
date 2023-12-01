@@ -87,9 +87,15 @@ class PicWindow:
   def puzzle_window(self): # should create a new window with playable/printable puzzle (so far has boxes but no numbers)
     row_str, col_str=PicWindow.number_sets(self)
     max_row=len(max(row_str, key=len))
-    row_room=max_row*self.sqrw/14
+    if max_row >= 4:
+      row_room=max_row*self.sqrw/9
+    else:
+      row_room=0
     max_col=len(max(col_str, key=len))
-    col_room=max_col*self.sqrw/10
+    if max_col >= 3:
+      col_room=max_col*self.sqrw/6
+    else:
+      col_room=0
     font_size=round(self.sqrw/3)
     
     self.window=tk.Toplevel(self.win)
@@ -117,14 +123,14 @@ class PicWindow:
       nboxv = self.puzzle.create_rectangle(offset, y1, offset+self.sqrw+row_room, y2)
     for vi in range(self.cols):
       x=vi*self.sqrw+offset+self.sqrw+row_room
-      self.puzzle.create_text(x+self.sqrw/2, offset*2+col_room/2, text=col_str[vi], font=("Monotype Corsiva",font_size))
+      self.puzzle.create_text(x+self.sqrw/2, offset+(self.sqrw+col_room)/2, text=col_str[vi], font=("Monotype Corsiva",font_size))
     for hi in range(self.cols):
       x1=hi*self.sqrw+offset+self.sqrw+row_room
       x2=y1+self.sqrw
       nboxh = self.puzzle.create_rectangle(x1, offset, x2, offset+self.sqrw+col_room)
     for hi in range(self.rows):
       y=hi*self.sqrw+offset+self.sqrw
-      self.puzzle.create_text(offset*2+row_room/2, y+self.sqrw/2+col_room, text=row_str[hi], font=("Monotype Corsiva",font_size))
+      self.puzzle.create_text(offset+(self.sqrw+row_room)/2, y+self.sqrw/2, text=row_str[hi], font=("Monotype Corsiva",font_size))
     self.puzzle.pack()
     
   def create_grid(self): #creates the interactive picross grid
