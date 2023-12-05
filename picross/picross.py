@@ -2,8 +2,6 @@
 import tkinter as tk
 import variables as var
 offset = var.offset
-# max_window_width=80%of_screenwidth
-# min_square_width=5% of screenwidth
 
 class PicWindow:
 
@@ -18,6 +16,7 @@ class PicWindow:
     self.sqrw = min(max_sqrw, default_sqrw)
     self.winw = self.sqrw*cols+offset*2
     self.winh = self.sqrw*rows+offset*2
+    self.mouse_color = None
   
   def play(self): #creates window/starts the program
     self.win = tk.Tk()
@@ -37,6 +36,77 @@ class PicWindow:
     savebutton.pack(side='right')
     displaybutton.pack(side='left',padx=offset)
     self.create_grid()
+    
+  def create_grid(self): #creates the interactive picross grid
+    for vi in range(self.rows):
+      for hi in range(self.cols):
+        color = var.empty if self.array[vi][hi] == 0 else var.fill
+        x1, y1 = hi*self.sqrw+offset, vi*self.sqrw+offset
+        x2, y2 = x1+self.sqrw, y1+self.sqrw
+        box = self.canv.create_rectangle(x1, y1, x2, y2, fill=color)
+        self.boxes[vi][hi] = box
+        self.canv.tag_bind(box, "<Button-1>", lambda _, z=(hi, vi): self.button_1(z))
+        self.canv.tag_bind(box, "<B1-Motion>", self.button_1_drag)
+        self.canv.tag_bind(box, "<Button-3>", lambda _, z=(hi, vi): self.button_3(z))
+        self.canv.tag_bind(box, "<B3-Motion>", self.button_3_drag)
+        # canvas.tag_bind(box, "<B1-Motion>", lambda event, z=box: drag_action(event, z))
+    for vi in range(self.rows):
+      for hi in range(self.cols):
+        if vi%5==0 and hi%5==0:
+          x1, y1 = hi*self.sqrw+offset, vi*self.sqrw+offset
+          x2, y2 = self.sqrw*min(hi+5, self.cols)+offset, self.sqrw*min(vi+5, self.rows)+offset
+          outline = self.canv.create_rectangle(x1, y1, x2, y2, width=3)
+          print(x1, y1, x2, y2)
+
+  def save(self): #saves current drawing as a txt file
+    filename = self.filename.get().strip(' ')
+    if filename != '':
+      #save file as filename
+      print('save as', filename)
+      f = open(f"{filename}.txt", "w")#create new file, overwrite if filename exists
+      for row in self.array:
+        for item in row:
+          f.write(str(item))
+        f.write('\n')
+      f.write('\n')
+
+  def button_1(self, z): #left mouse button, toggles square color to filled
+    x, y = z[0], z[1]
+    box = self.boxes[y][x]
+    color = self.canv.itemcget(box, "fill")
+    if color == var.fill:
+      self.canv.itemconfig(box, fill=var.empty)
+      self.array[y][x] = 0
+      self.mouse_color = var.empty
+    else:
+      self.canv.itemconfig(box, fill=var.fill)
+      self.array[y][x] = 1
+      self.mouse_color = var.fill
+  
+  def button_1_drag(self, event):
+    x, y = (event.x-offset)//self.sqrw, (event.y-offset)//self.sqrw
+    box = self.boxes[y][x]
+    self.canv.itemconfig(box, fill=self.mouse_color)
+    self.array[y][x] = 0 if (self.mouse_color == var.empty) else 1
+  
+  def button_3(self, z): #right mouse button, toggles square color to crossed out
+    x, y = z[0], z[1]
+    box = self.boxes[y][x]
+    color = self.canv.itemcget(box, "fill")
+    if color == var.checked:
+      self.canv.itemconfig(box, fill=var.empty)
+      self.array[y][x] = 0
+      self.mouse_color = var.empty
+    else:
+      self.canv.itemconfig(box, fill=var.checked)
+      self.array[y][x] = 0
+      self.mouse_color = var.checked
+
+  def button_3_drag(self, event):
+    x, y = (event.x-offset)//self.sqrw, (event.y-offset)//self.sqrw
+    box = self.boxes[y][x]
+    self.canv.itemconfig(box, fill=self.mouse_color)
+    self.array[y][x] = 0
 
   def number_sets(self): #creates the sets of numbers that will be displayed for each row and col in the final puzzle (in string format)
     row_sets=[]
@@ -85,7 +155,7 @@ class PicWindow:
     return(row_str, col_str)
 
   def puzzle_window(self): # should create a new window with playable/printable puzzle (so far has boxes but no numbers)
-    row_str, col_str=PicWindow.number_sets(self)
+    row_str, col_str=self.number_sets()
     max_row=len(max(row_str, key=len))
     if max_row >= 4:
       row_room=max_row*self.sqrw/9
@@ -106,7 +176,6 @@ class PicWindow:
         x1, y1 = hi*self.sqrw+offset+self.sqrw+row_room, vi*self.sqrw+offset+self.sqrw+col_room
         x2, y2 = x1+self.sqrw, y1+self.sqrw
         box = self.puzzle.create_rectangle(x1, y1, x2, y2)
-        self.boxes[vi][hi] = box
     for vi in range(self.rows):
       for hi in range(self.cols):
         if vi%5==0 and hi%5==0:
@@ -131,63 +200,8 @@ class PicWindow:
       y=hi*self.sqrw+offset+self.sqrw
       self.puzzle.create_text(offset+(self.sqrw+row_room)/2, y+self.sqrw/2, text=row_str[hi], font=("Monotype Corsiva",font_size))
     self.puzzle.pack()
-    
-  def create_grid(self): #creates the interactive picross grid
-    for vi in range(self.rows):
-      for hi in range(self.cols):
-        color = var.empty if self.array[vi][hi] == 0 else var.fill
-        x1, y1 = hi*self.sqrw+offset, vi*self.sqrw+offset
-        x2, y2 = x1+self.sqrw, y1+self.sqrw
-        box = self.canv.create_rectangle(x1, y1, x2, y2, fill=color)
-        self.boxes[vi][hi] = box
-        self.canv.tag_bind(box, "<Button-1>", lambda _, z=(vi, hi): self.button_1(z))
-        self.canv.tag_bind(box, "<Button-3>", lambda _, z=(vi, hi): self.button_3(z))
-        # canvas.tag_bind(box, "<B1-Motion>", lambda event, z=box: drag_action(event, z))
-    for vi in range(self.rows):
-      for hi in range(self.cols):
-        if vi%5==0 and hi%5==0:
-          x1, y1 = hi*self.sqrw+offset, vi*self.sqrw+offset
-          x2, y2 = self.sqrw*min(hi+5, self.cols)+offset, self.sqrw*min(vi+5, self.rows)+offset
-          outline = self.canv.create_rectangle(x1, y1, x2, y2, width=3)
-          print(x1, y1, x2, y2)
-
-  def save(self): #saves current drawing as a txt file
-    filename = self.filename.get().strip(' ')
-    if filename != '':
-      #save file as filename
-      print('save as', filename)
-      f = open(f"{filename}.txt", "w")#create new file, overwrite if filename exists
-      for row in self.array:
-        for item in row:
-          f.write(str(item))
-        f.write('\n')
-      f.write('\n')
-
-  def button_1(self, z): #left mouse button, toggles square color to filled
-    x, y = z[0], z[1]
-    box = self.boxes[x][y]
-    color = self.canv.itemcget(box, "fill")
-    if color == var.fill:
-      self.canv.itemconfig(box, fill=var.empty)
-      self.array[x][y] = 0
-    else:
-      self.canv.itemconfig(box, fill=var.fill)
-      self.array[x][y] = 1
-    print(x, y, self.array[x][y])
-  
-  def button_3(self, z): #right mouse button, toggles square color to crossed out
-    x, y = z[0], z[1]
-    box = self.boxes[x][y]
-    color = self.canv.itemcget(box, "fill")
-    if color == var.checked:
-      self.canv.itemconfig(box, fill=var.empty)
-      self.array[x][y] = 0
-    else:
-      self.canv.itemconfig(box, fill=var.checked)
-      self.array[x][y] = 0
-    print(x, y, self.array[x][y])
 
 
 if __name__ == "__main__": #if this program is run on its own it will default to an empty 15x15 grid.
-  picross = PicWindow(15, 15, [ [ 0 for i in range(15) ] for j in range(15) ])
+  picross = PicWindow(15, 15, [ [ 0 for i in range(15) ] for j in range(15) ], [1920,1080])
   picross.play()
