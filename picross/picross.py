@@ -103,10 +103,11 @@ class PicWindow:
       self.mouse_color = var.checked
 
   def button_3_drag(self, event):
-    x, y = (event.x-offset)//self.sqrw, (event.y-offset)//self.sqrw
-    box = self.boxes[y][x]
-    self.canv.itemconfig(box, fill=self.mouse_color)
-    self.array[y][x] = 0
+    if event.x > offset and event.y > offset and event.y < self.sqrw*self.rows+offset and event.x < self.sqrw*self.cols+offset:
+      x, y = (event.x-offset)//self.sqrw, (event.y-offset)//self.sqrw
+      box = self.boxes[y][x]
+      self.canv.itemconfig(box, fill=self.mouse_color)
+      self.array[y][x] = 0
 
   def number_sets(self): #creates the sets of numbers that will be displayed for each row and col in the final puzzle (in string format)
     row_sets=[]
@@ -158,22 +159,23 @@ class PicWindow:
       col_str.append(i)
     return(row_str, col_str)
 
-  def puzzle_window(self): # should create a new window with playable/printable puzzle (so far has boxes but no numbers)
+  def puzzle_window(self): #creates a new window with printable puzzle
     row_str, col_str = self.number_sets()
     max_row, max_col = 0, 0
+    font_size = self.sqrw//3
     for i in row_str:
       x = i.replace(" ", "").replace("\n", "")
       max_row = max(max_row,len(x))
     for i in col_str:
       x = i.replace(" ", "").replace("\n", "")
       max_col = max(max_col,len(x))
-    row_room = self.sqrw + (self.sqrw//2)*(max_row-1)
-    col_room = self.sqrw + (self.sqrw//2)*(max_col-1)
+    row_room = self.sqrw + (self.sqrw//3)*(max_row-1)
+    col_room = self.sqrw + (self.sqrw//1.6)*(max_col-1)
     w, h = offset*2 + row_room + self.sqrw*self.cols, offset*2 + col_room + self.sqrw*self.rows
     self.window=tk.Toplevel(self.win)
-    self.window.geometry(f"{w}x{h}")
+    self.window.geometry(f"{int(w)}x{int(h)}")
     self.window.resizable(False,False)
-    self.puzzle=tk.Canvas(self.window, height=h, width=w)
+    self.puzzle=tk.Canvas(self.window, height=h, width=w, background='white')
     for vi in range(self.rows):
       for hi in range(self.cols):
         x1, y1 = hi*self.sqrw+offset+row_room, vi*self.sqrw+offset+col_room
@@ -194,7 +196,7 @@ class PicWindow:
         outline = self.puzzle.create_rectangle(x1, y1, x2, y2, width=3)
     for col in range(self.cols):
       x, y = col*self.sqrw+offset+row_room+self.sqrw/2, offset+col_room/2
-      self.puzzle.create_text(x, y, text=col_str[col], font=("Monotype Corsiva",16))
+      self.puzzle.create_text(x, y, text=col_str[col], font=("Monotype Corsiva",font_size))
     for col in range(self.cols):
       x1,y1=offset+col*self.sqrw+row_room, offset
       x2,y2 = x1+self.sqrw, y1+col_room
@@ -204,7 +206,7 @@ class PicWindow:
         outline = self.puzzle.create_rectangle(x1, y1, x2, y2, width=3)
     for row in range(self.rows):
       x, y = offset+row_room/2, row*self.sqrw+offset+col_room+self.sqrw/2
-      self.puzzle.create_text(x, y, text=row_str[row], font=("Monotype Corsiva",16))
+      self.puzzle.create_text(x, y, text=row_str[row], font=("Monotype Corsiva",font_size))
     self.puzzle.pack()
 
 
