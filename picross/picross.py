@@ -1,6 +1,7 @@
 #makes a window to draw in a picross grid
 import tkinter as tk
 import variables as var
+from PIL import ImageGrab
 offset = var.offset
 
 class PicWindow:
@@ -208,6 +209,17 @@ class PicWindow:
       x, y = offset+row_room/2, row*self.sqrw+offset+col_room+self.sqrw/2
       self.puzzle.create_text(x, y, text=row_str[row], font=("Monotype Corsiva",font_size))
     self.puzzle.pack()
+    self.save_puzzle_image()
+  
+  def save_puzzle_image(self):
+    filename = self.filename.get().strip(' ')
+    #self.puzzle_window()
+    x1, y1 = self.window.winfo_rootx(), self.window.winfo_rooty()
+    x2, y2 = self.window.winfo_width(), self.window.winfo_height()
+    print(self.window.geometry())
+    print(x1, y1, x2, y2)
+    image = ImageGrab.grab(bbox=(x1, y1, x2, y2))
+    image.save(f"{filename}.jpg")
 
 
 if __name__ == "__main__": #if this program is run on its own it will default to an empty 15x15 grid.
