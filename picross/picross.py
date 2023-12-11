@@ -227,7 +227,7 @@ class PicWindow:
     filename = self.filename.get().strip(' ')
     #self.puzzle_window()
     x1, y1 = self.window.winfo_rootx(), self.window.winfo_rooty()
-    x2, y2 = self.window.winfo_width(), self.window.winfo_height()
+    x2, y2 = x1+self.window.winfo_width(), y1+self.window.winfo_height()
     print(self.window.geometry())
     print(x1, y1, x2, y2)
     image = ImageGrab.grab(bbox=(x1, y1, x2, y2))
