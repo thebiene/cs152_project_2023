@@ -226,6 +226,7 @@ class PicWindow:
   def save_puzzle_image(self):
     filename = self.filename.get().strip(' ')
     #self.puzzle_window()
+    self.window.update_idletasks()
     x1, y1 = self.window.winfo_rootx(), self.window.winfo_rooty()
     x2, y2 = x1+self.window.winfo_width(), y1+self.window.winfo_height()
     print(self.window.geometry())
