@@ -11,9 +11,9 @@ class PicWindow:
     self.cols = cols
     self.array = array
     self.boxes = [ [ None for j in row ] for row in array ]
-    scrw, scrh = resolution[0], resolution[1]
-    default_sqrw = min(scrw, scrh)//20
-    max_sqrw = min((scrw//10*8)//cols,(scrh//10*8)//rows)
+    self.scrw, self.scrh = resolution[0], resolution[1]
+    default_sqrw = min(self.scrw, self.scrh)//20
+    max_sqrw = min((self.scrw//10*8)//cols,(self.scrh//10*8)//rows)
     self.sqrw = min(max_sqrw, default_sqrw)
     self.winw = self.sqrw*cols+offset*2
     self.winh = self.sqrw*rows+offset*2
@@ -161,6 +161,7 @@ class PicWindow:
     return(row_str, col_str)
 
   def puzzle_window(self): #creates a new window with printable puzzle
+    room_n = 1.3
     row_str, col_str = self.number_sets()
     max_row, max_col = 0, 0
     font_size = self.sqrw//3
@@ -170,44 +171,59 @@ class PicWindow:
     for i in col_str:
       x = i.replace(" ", "").replace("\n", "")
       max_col = max(max_col,len(x))
-    row_room = self.sqrw + (self.sqrw//3)*(max_row-1)
-    col_room = self.sqrw + (self.sqrw//1.6)*(max_col-1)
+    row_room = max(self.sqrw, (self.sqrw//room_n)*(max_row-1))
+    col_room = max(self.sqrw, (self.sqrw//room_n)*(max_col-1))
     w, h = offset*2 + row_room + self.sqrw*self.cols, offset*2 + col_room + self.sqrw*self.rows
     self.window=tk.Toplevel(self.win)
     self.window.geometry(f"{int(w)}x{int(h)}")
     self.window.resizable(False,False)
+    disp_sqrw=self.sqrw
+    if self.winh+col_room+offset*2 <= self.scrh*9/10 and self.winw+row_room+offset*2 <= self.scrw*9/10:
+      self.puzzle=tk.Canvas(self.window, height=h, width=w, background='white')
+    else:
+      while(disp_sqrw*self.rows+col_room+offset*2 >= self.scrh*8.5/10 or disp_sqrw*self.cols+row_room+offset*2 >= self.scrw*8.5/10):
+        print("while")
+        disp_sqrw -=1
+        row_room=max(disp_sqrw,round((disp_sqrw//room_n)*(max_row-1)))
+        col_room=max(disp_sqrw,round((disp_sqrw//room_n)*(max_col-1)))
+        print(col_room, row_room)
+        print(disp_sqrw*self.rows+col_room+offset*2)
+        print(self.scrh*8.5/10)
+      w, h = offset*2 + row_room + disp_sqrw*self.cols, offset*2 + col_room + disp_sqrw*self.rows
+      self.puzzle=tk.Canvas(self.window, height=h, width=w, background='white')
+    font_size=disp_sqrw//2
     self.puzzle=tk.Canvas(self.window, height=h, width=w, background='white')
     for vi in range(self.rows):
       for hi in range(self.cols):
-        x1, y1 = hi*self.sqrw+offset+row_room, vi*self.sqrw+offset+col_room
-        x2, y2 = x1+self.sqrw, y1+self.sqrw
+        x1, y1 = hi*disp_sqrw+offset+row_room, vi*disp_sqrw+offset+col_room
+        x2, y2 = x1+disp_sqrw, y1+disp_sqrw
         box = self.puzzle.create_rectangle(x1, y1, x2, y2)
     for vi in range(self.rows):
       for hi in range(self.cols):
         if vi%5==0 and hi%5==0:
-          x1, y1 = hi*self.sqrw+offset+row_room, vi*self.sqrw+offset+col_room
-          x2, y2 = self.sqrw*min(hi+5, self.cols)+offset+row_room, self.sqrw*min(vi+5, self.rows)+offset+col_room
+          x1, y1 = hi*disp_sqrw+offset+row_room, vi*disp_sqrw+offset+col_room
+          x2, y2 = disp_sqrw*min(hi+5, self.cols)+offset+row_room, disp_sqrw*min(vi+5, self.rows)+offset+col_room
           outline = self.puzzle.create_rectangle(x1, y1, x2, y2, width=3)
     for row in range(self.rows):
-      x1, y1 = offset, offset+row*self.sqrw+col_room
-      x2,y2 = x1+row_room, y1+self.sqrw
+      x1, y1 = offset, offset+row*disp_sqrw+col_room
+      x2,y2 = x1+row_room, y1+disp_sqrw
       nboxv = self.puzzle.create_rectangle(x1, y1, x2, y2)
       if row%5==0:
-        y2 = min(row+5,self.rows)*self.sqrw+offset+col_room
+        y2 = min(row+5,self.rows)*disp_sqrw+offset+col_room
         outline = self.puzzle.create_rectangle(x1, y1, x2, y2, width=3)
     for col in range(self.cols):
-      x, y = col*self.sqrw+offset+row_room+self.sqrw/2, offset+col_room/2
-      self.puzzle.create_text(x, y, text=col_str[col], font=("Monotype Corsiva",font_size))
+      x, y = col*disp_sqrw+offset+row_room+disp_sqrw/2, offset+col_room/2
+      self.puzzle.create_text(x, y, text=col_str[col], font=("Courier",font_size))
     for col in range(self.cols):
-      x1,y1=offset+col*self.sqrw+row_room, offset
-      x2,y2 = x1+self.sqrw, y1+col_room
+      x1,y1=offset+col*disp_sqrw+row_room, offset
+      x2,y2 = x1+disp_sqrw, y1+col_room
       nboxh = self.puzzle.create_rectangle(x1, y1, x2, y2)
       if col%5==0:
-        x2 = min(col+5,self.cols)*self.sqrw+offset+row_room
+        x2 = min(col+5,self.cols)*disp_sqrw+offset+row_room
         outline = self.puzzle.create_rectangle(x1, y1, x2, y2, width=3)
     for row in range(self.rows):
-      x, y = offset+row_room/2, row*self.sqrw+offset+col_room+self.sqrw/2
-      self.puzzle.create_text(x, y, text=row_str[row], font=("Monotype Corsiva",font_size))
+      x, y = offset+row_room/2, row*disp_sqrw+offset+col_room+disp_sqrw/2
+      self.puzzle.create_text(x, y, text=row_str[row], font=("Courier",font_size))
     self.puzzle.pack()
     self.save_puzzle_image()
   
