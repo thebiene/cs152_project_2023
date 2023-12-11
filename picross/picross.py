@@ -182,13 +182,9 @@ class PicWindow:
       self.puzzle=tk.Canvas(self.window, height=h, width=w, background='white')
     else:
       while(disp_sqrw*self.rows+col_room+offset*2 >= self.scrh*8.5/10 or disp_sqrw*self.cols+row_room+offset*2 >= self.scrw*8.5/10):
-        print("while")
         disp_sqrw -=1
         row_room=max(disp_sqrw,round((disp_sqrw//room_n)*(max_row-1)))
         col_room=max(disp_sqrw,round((disp_sqrw//room_n)*(max_col-1)))
-        print(col_room, row_room)
-        print(disp_sqrw*self.rows+col_room+offset*2)
-        print(self.scrh*8.5/10)
       w, h = offset*2 + row_room + disp_sqrw*self.cols, offset*2 + col_room + disp_sqrw*self.rows
       self.puzzle=tk.Canvas(self.window, height=h, width=w, background='white')
     font_size=disp_sqrw//2
