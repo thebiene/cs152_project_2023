@@ -222,7 +222,7 @@ class PicWindow:
       x, y = offset+row_room/2, row*disp_sqrw+offset+col_room+disp_sqrw/2
       self.puzzle.create_text(x, y, text=row_str[row], font=("Courier",font_size))
     self.puzzle.pack()
-    self.window.after(self.cols*self.rows, self.save_puzzle_image())
+    self.puzzle.bind('<Visibility>', self.save_puzzle_image())
   
   def save_puzzle_image(self):
     filename = self.filename.get().strip(' ')
