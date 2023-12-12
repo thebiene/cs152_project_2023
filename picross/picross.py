@@ -173,12 +173,13 @@ class PicWindow:
       max_col = max(max_col,len(x))
     row_room = max(self.sqrw, (self.sqrw//room_n)*(max_row-1))
     col_room = max(self.sqrw, (self.sqrw//room_n)*(max_col-1))
-    w, h = offset*2 + row_room + self.sqrw*self.cols, offset*2 + col_room + self.sqrw*self.rows
+    #w, h = offset*2 + row_room + self.sqrw*self.cols, offset*2 + col_room + self.sqrw*self.rows
     self.window=tk.Toplevel(self.win)
-    self.window.geometry(f"{int(w)}x{int(h)}")
+    #self.window.geometry(f"{int(w)}x{int(h)}")
     self.window.resizable(False,False)
     disp_sqrw=self.sqrw
     if self.winh+col_room+offset*2 <= self.scrh*9/10 and self.winw+row_room+offset*2 <= self.scrw*9/10:
+      w, h = offset*2 + row_room + disp_sqrw*self.cols, offset*2 + col_room + disp_sqrw*self.rows
       self.puzzle=tk.Canvas(self.window, height=h, width=w, background='white')
     else:
       while(disp_sqrw*self.rows+col_room+offset*2 >= self.scrh*8.5/10 or disp_sqrw*self.cols+row_room+offset*2 >= self.scrw*8.5/10):
@@ -221,7 +222,7 @@ class PicWindow:
       x, y = offset+row_room/2, row*disp_sqrw+offset+col_room+disp_sqrw/2
       self.puzzle.create_text(x, y, text=row_str[row], font=("Courier",font_size))
     self.puzzle.pack()
-    self.save_puzzle_image()
+    self.window.after(self.cols*self.rows, self.save_puzzle_image())
   
   def save_puzzle_image(self):
     filename = self.filename.get().strip(' ')
